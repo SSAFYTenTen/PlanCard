@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver  # DB 드라이버
-    url: jdbc:mysql://localhost:3306/ssafydb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true       # 데이터베이스 URL
+    url: jdbc:mysql://localhost:3306/dogbomi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true       # 데이터베이스 URL
     username: ssafy                     # 데이터베이스 계정명
     password: ssafy                       # 데이터베이스 계정 비밀번호
 
