@@ -8,11 +8,11 @@ public class MemberException extends RuntimeException {
     private final int status;
     private final String errorMessage;
 
-    public MemberException(MemberError errorCode, MemberError errorCode1, int status, String errorMessage) {
+    public MemberException(MemberError errorCode) {
         super(errorCode.getErrorMessage());
-        this.errorCode = errorCode1;
-        this.status = status;
-        this.errorMessage = errorMessage;
+        this.errorCode = errorCode;
+        this.status = errorCode.getHttpStatus().value();
+        this.errorMessage = errorCode.getErrorMessage();
     }
 
     public MemberException(MemberError errorCode, Throwable e, String errorMessage) {
@@ -21,4 +21,5 @@ public class MemberException extends RuntimeException {
         this.status = errorCode.getHttpStatus().value();
         this.errorMessage = errorMessage;
     }
+
 }
