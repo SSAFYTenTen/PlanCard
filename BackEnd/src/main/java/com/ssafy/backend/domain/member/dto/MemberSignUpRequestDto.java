@@ -17,29 +17,29 @@ public class MemberSignUpRequestDto {
 
     @NotBlank(message = "이메일은 필수 입력값입니다.")
     @Email(message = "이메일 형식이 올바르지 않습니다")
-    private String memberEmail;
+    private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
 //    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,16}$", message = "비밀번호는 8~16자리수여야 합니다. 영문 대소문자, 숫자, 특수문자를 1개 이상 포함해야 합니다.")
-    private String memberPassword;
+    private String password;
 
     @NotBlank(message = "이름은 비워둘 수 없습니다.")
-    private String memberName;
+    private String name;
 
     @NotBlank(message = "이름은 필수 입력값입니다.")
-    private String memberNickname;
+    private String nickname;
 
     @NotBlank(message = "주소는 필수 입력값입니다.")
-    private String memberAddress;
+    private String address;
 
     // DTO -> Entity
     public Member toEntity() {
         return Member.builder()
-                .email(memberEmail)
-                .password(memberPassword)
-                .name(memberName)
-                .nickname(memberNickname)
-                .address(memberAddress)
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .address(address)
                 .role(MemberRole.USER)
                 .build();
     }
