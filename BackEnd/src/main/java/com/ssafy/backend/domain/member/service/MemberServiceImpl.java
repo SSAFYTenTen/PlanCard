@@ -7,6 +7,7 @@ import com.ssafy.backend.domain.member.exception.MemberError;
 import com.ssafy.backend.domain.member.exception.MemberException;
 import com.ssafy.backend.domain.member.repository.MemberRepository;
 import com.ssafy.backend.global.component.jwt.dto.TokenMemberInfoDto;
+import com.ssafy.backend.global.component.jwt.repository.RefreshRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final RefreshRepository refreshRepository;
 
     @Override
     public void signUpMember(MemberSignUpRequestDto signUpRequestDto) {
@@ -45,5 +48,14 @@ public class MemberServiceImpl implements MemberService {
                 .nickname(member.getNickname())
                 .role(member.getRole().toString())
                 .build();
+    }
+
+    @Override
+    public void logoutMember(String email) {
+        try {
+            refreshRepository.delete(email);
+        } catch(Exception e) {
+            throw new MemberException(MemberError.ALREADY_MEMBER_LOGOUT);
+        }
     }
 }

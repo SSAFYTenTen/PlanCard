@@ -27,6 +27,11 @@ spring:
     job:
       enabled: false
 
+  # Redis setting
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 # jwt setting
 jwt:
@@ -37,8 +42,6 @@ jwt:
   expired-min:
     access: 60   # 액세스 토큰 만료제한시간 60분 (1시간)
     refresh: 10080  # 리프레쉬 토큰 만료제한시간 10080분 (7일)
-
-# Redis setting
 
 # firebase setting
 

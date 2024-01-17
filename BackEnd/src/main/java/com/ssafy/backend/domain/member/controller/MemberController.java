@@ -1,5 +1,6 @@
 package com.ssafy.backend.domain.member.controller;
 
+import com.ssafy.backend.domain.member.dto.MemberLoginActiveDto;
 import com.ssafy.backend.domain.member.dto.MemberLoginRequestDto;
 import com.ssafy.backend.domain.member.dto.MemberLoginResponseDto;
 import com.ssafy.backend.domain.member.dto.MemberSignUpRequestDto;
@@ -13,10 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -49,5 +49,19 @@ public class MemberController {
         response.addCookie(accessTokenCookie);
 
         return ResponseEntity.ok().body(Message.success(loginResponseDto));
+    }
+
+    @GetMapping("/logout")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<Message<Void>> logoutMember(@AuthenticationPrincipal MemberLoginActiveDto loginActiveDto,
+                                                      HttpServletResponse response) {
+        memberService.logoutMember(loginActiveDto.getEmail());
+
+        // 쿠키 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
+        return ResponseEntity.ok().body(Message.success());
     }
 }
