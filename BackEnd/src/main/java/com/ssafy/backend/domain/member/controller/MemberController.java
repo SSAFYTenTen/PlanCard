@@ -8,6 +8,8 @@ import com.ssafy.backend.global.common.dto.Message;
 import com.ssafy.backend.global.component.jwt.dto.TokenDto;
 import com.ssafy.backend.global.component.jwt.dto.TokenMemberInfoDto;
 import com.ssafy.backend.global.component.jwt.service.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +34,19 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Message<MemberLoginResponseDto>> login(@RequestBody MemberLoginRequestDto loginRequestDto) {
+    public ResponseEntity<Message<MemberLoginResponseDto>> login(@RequestBody MemberLoginRequestDto loginRequestDto,
+                                                                 HttpServletResponse response) {
         TokenMemberInfoDto tokenMemberInfoDto = memberService.loginCheckMember(loginRequestDto);
         TokenDto tokenDto = jwtService.issueToken(tokenMemberInfoDto);
         MemberLoginResponseDto loginResponseDto = MemberLoginResponseDto.builder()
                 .memberInfo(tokenMemberInfoDto)
                 .token(tokenDto)
                 .build();
-        
-        // JWT 토큰을 쿠키에 저장하는 로직 구현해야함
+        // JWT 토큰을 쿠키에 저장
+        Cookie accessTokenCookie = new Cookie("accessToken", tokenDto.getAccessToken());
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(3600); // 60분(3600초)으로 설정
+        response.addCookie(accessTokenCookie);
 
         return ResponseEntity.ok().body(Message.success(loginResponseDto));
     }
