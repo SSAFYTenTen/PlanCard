@@ -10,4 +10,7 @@ public interface MemberService {
 
     // 로그인 기능
     TokenMemberInfoDto loginCheckMember(MemberLoginRequestDto loginRequestDto);
+
+    // 로그아웃 기능
+    void logoutMember(String email);
 }
