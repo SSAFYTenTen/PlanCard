@@ -5,6 +5,7 @@ import com.ssafy.backend.global.component.jwt.JwtParser;
 import com.ssafy.backend.global.component.jwt.JwtUtils;
 import com.ssafy.backend.global.component.jwt.dto.TokenDto;
 import com.ssafy.backend.global.component.jwt.dto.TokenMemberInfoDto;
+import com.ssafy.backend.global.component.jwt.repository.RefreshRepository;
 import io.jsonwebtoken.Claims;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class JwtServiceImpl implements JwtService {
     private final JwtUtils jwtUtils;
     private final JwtIssuer jwtIssuer;
     private final JwtParser jwtParser;
+    private final RefreshRepository refreshRepository;
 
 
     @Override
@@ -29,8 +31,17 @@ public class JwtServiceImpl implements JwtService {
                 tokenMemberInfoDto.toClaims(jwtUtils.getAccessTokenExpiredMin()), jwtUtils.getEncodedAccessKey()
         );
 
-        // refresh 토큰은 redis에 저장
-        // 해당 로직 구현 해야함
+        String refreshToken = jwtIssuer.issueToken(
+                tokenMemberInfoDto.toClaims(jwtUtils.getRefreshTokenExpiredMin()), jwtUtils.getEncodedRefreshKey()
+        );
+
+        try {
+            // refreshToekn redis에 저장
+            refreshRepository.save(tokenMemberInfoDto.getEmail(), refreshToken, jwtUtils.getRefreshTokenExpiredMin());
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Redis 연결에 실패했습니다.");
+        }
 
         return TokenDto.builder()
                 .accessToken(accessToken)
