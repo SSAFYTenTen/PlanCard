@@ -11,6 +11,7 @@ import com.ssafy.backend.global.component.jwt.repository.RefreshRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,6 +24,8 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final RefreshRepository refreshRepository;
 
     @Override
@@ -30,9 +33,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository.existsByEmail(signUpRequestDto.getEmail())) {
             throw new MemberException(MemberError.EXIST_MEMBER_EMAIL);
         }
-
-        // Spring security 설정 시 PasswordEncoder 설정해야함
-//        signUpRequestDto.setMemberPassword();
+        signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
         memberRepository.save(signUpRequestDto.toEntity());
     }
 
@@ -40,8 +41,12 @@ public class MemberServiceImpl implements MemberService {
     public TokenMemberInfoDto loginCheckMember(MemberLoginRequestDto loginRequestDto) {
         Member member = memberRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()
         -> new MemberException(MemberError.NOT_FOUND_MEMBER));
-        
-        // Spring security 적용 시 비밀번호 암호화 로직 구현해야 함
+
+        String realPassword = member.getPassword();
+
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(), realPassword)) {
+            throw new MemberException(MemberError.NOT_MATCH_PASSWORD);
+        }
         
         return TokenMemberInfoDto.builder()
                 .id(member.getId())
