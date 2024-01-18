@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional
@@ -52,10 +54,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void logoutMember(String email) {
-        try {
-            refreshRepository.delete(email);
-        } catch(Exception e) {
+        // 레디스에서 토큰 찾기
+        Optional<String> token = refreshRepository.find(email);
+        if (token.isEmpty()) {
+            // 토큰이 존재하지 않는 경우 예외 발생
             throw new MemberException(MemberError.ALREADY_MEMBER_LOGOUT);
         }
+
+        // 토큰이 존재하면 삭제
+        refreshRepository.delete(email);
     }
 }

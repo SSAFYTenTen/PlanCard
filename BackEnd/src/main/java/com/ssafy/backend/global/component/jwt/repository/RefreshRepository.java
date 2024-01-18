@@ -15,18 +15,18 @@ public class RefreshRepository {
 
     private static final String KEY_PREFIX = "refreshToken::";
 
-    public void save(String userEmail, String token, int expiresMin) {
-        String key = KEY_PREFIX + userEmail;
+    public void save(String email, String token, int expiresMin) {
+        String key = KEY_PREFIX + email;
         redisTemplate.opsForValue().set(key, token, Duration.ofMinutes(expiresMin));
         redisTemplate.expire(key, expiresMin, TimeUnit.MINUTES);    // 만료시간 설정
     }
 
-    public Optional<String> find(String memberEmail) {
-        String token = redisTemplate.opsForValue().get(KEY_PREFIX + memberEmail);
+    public Optional<String> find(String email) {
+        String token = redisTemplate.opsForValue().get(KEY_PREFIX + email);
         return Optional.ofNullable(token);
     }
 
-    public void delete(String memberEmail) {
-        redisTemplate.delete(KEY_PREFIX + memberEmail);
+    public void delete(String email) {
+        redisTemplate.delete(KEY_PREFIX + email);
     }
 }
