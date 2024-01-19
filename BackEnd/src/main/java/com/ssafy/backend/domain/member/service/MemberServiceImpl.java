@@ -1,6 +1,7 @@
 package com.ssafy.backend.domain.member.service;
 
 import com.ssafy.backend.domain.member.dto.MemberLoginRequestDto;
+import com.ssafy.backend.domain.member.dto.MemberPasswordUpdateDto;
 import com.ssafy.backend.domain.member.dto.MemberSignUpRequestDto;
 import com.ssafy.backend.domain.member.entity.Member;
 import com.ssafy.backend.domain.member.exception.MemberError;
@@ -69,4 +70,24 @@ public class MemberServiceImpl implements MemberService {
         // 토큰이 존재하면 삭제
         refreshRepository.delete(email);
     }
+
+    @Override
+    public void updatePasswordMember(Long id, MemberPasswordUpdateDto passwordUpdateDto) {
+        Member member = memberRepository.findById(id).orElseThrow(()
+        -> new MemberException(MemberError.NOT_FOUND_MEMBER));
+
+        String realPassword = member.getPassword();
+
+        if(!passwordEncoder.matches(passwordUpdateDto.getNowPassword(), realPassword)) {
+            throw new MemberException(MemberError.NOT_MATCH_PASSWORD);
+        }
+
+        if(passwordEncoder.matches(passwordUpdateDto.getChangePassword(), realPassword)) {
+            throw new MemberException(MemberError.CURRENT_CHANGE_MATCH_PASSWORD);
+        }
+
+        member.updatePassword(passwordEncoder.encode(passwordUpdateDto.getChangePassword()));
+    }
+
+
 }

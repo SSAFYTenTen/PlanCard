@@ -1,9 +1,6 @@
 package com.ssafy.backend.domain.member.controller;
 
-import com.ssafy.backend.domain.member.dto.MemberLoginActiveDto;
-import com.ssafy.backend.domain.member.dto.MemberLoginRequestDto;
-import com.ssafy.backend.domain.member.dto.MemberLoginResponseDto;
-import com.ssafy.backend.domain.member.dto.MemberSignUpRequestDto;
+import com.ssafy.backend.domain.member.dto.*;
 import com.ssafy.backend.domain.member.service.MemberService;
 import com.ssafy.backend.global.common.dto.Message;
 import com.ssafy.backend.global.component.jwt.dto.TokenDto;
@@ -62,6 +59,14 @@ public class MemberController {
         accessTokenCookie.setMaxAge(0);
         accessTokenCookie.setPath("/");
         response.addCookie(accessTokenCookie);
+        return ResponseEntity.ok().body(Message.success());
+    }
+
+    @PutMapping("/update/password")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<Message<Void>> updatePasswordMember(@AuthenticationPrincipal MemberLoginActiveDto loginActiveDto,
+                                                              @RequestBody MemberPasswordUpdateDto passwordUpdateDto) {
+        memberService.updatePasswordMember(loginActiveDto.getId(), passwordUpdateDto);
         return ResponseEntity.ok().body(Message.success());
     }
 }
